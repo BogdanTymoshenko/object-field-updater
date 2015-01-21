@@ -20,7 +20,7 @@ public class ObjectUpdaterMetadata {
     private final String updaterPackageName;
     private final String updaterClassName;
     private final String targetClassName;
-    private final List<Field> targetClassFields = new LinkedList<>();
+    private final List<Field> targetClassFields = new LinkedList<Field>();
 
 
     public ObjectUpdaterMetadata(TypeElement targetTypeElement, Elements elementUtils) {

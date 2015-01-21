@@ -7,7 +7,14 @@ repositories {
     mavenCentral()
 }
 
+//compileJava {
+//    // This only works when forking and passing 'javac' as an executable
+////    options.compilerArgs << '-Xdebug, -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009'
+//
+//}
+
 dependencies {
     compile project(':library')
     compile project(':processor')
 }
+

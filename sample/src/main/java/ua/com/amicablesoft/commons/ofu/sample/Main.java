@@ -8,27 +8,36 @@ import ua.com.amicablesoft.commons.ofu.Updater;
 public class Main {
 
     public static void main(String[] args) {
-        Model model1 = new Model();
-        model1.setIntValue(1);
-        model1.setStringValue("test 1");
+        Employee employee1 = new Employee();
+        employee1.setName("Vasia");
+        employee1.setAge(22);
 
-        Model model2 = new Model();
-        model2.setIntValue(2);
-        model2.setStringValue("test 2");
+        Car car1 = new Car();
+        car1.setVendor("Opel");
+        car1.setModel("Kadet");
+        car1.setYear(1987);
+        employee1.setCar(car1);
 
-        System.out.println("Model 1 Int value "+model1.getIntValue());
-        System.out.println("Model 1 String value "+model1.getStringValue());
+        Address address1 = new Address();
+        address1.setStreet("Melnykova st.");
+        address1.setHouse("18");
+        employee1.setAddress(address1);
 
-        System.out.println("Model 2 Int value "+model2.getIntValue());
-        System.out.println("Model 2 String value "+model2.getStringValue());
+        Employee employee2 = new Employee();
+        employee2.setName("Petia");
+        employee2.setAge(26);
 
-        System.out.println("Perform model 1 update from model 2");
-        Updater.update(model1, model2);
+        Car car2 = new Car();
+        car2.setVendor("Ford");
+        car2.setModel("Scorpio");
+        car2.setYear(1989);
+        employee2.setCar(car2);
 
-        System.out.println("Model 1 Int value "+model1.getIntValue());
-        System.out.println("Model 1 String value "+model1.getStringValue());
+        Address address2 = new Address();
+        address2.setStreet("Lisova st.");
+        address2.setHouse("64");
+        employee2.setAddress(address2);
 
-        System.out.println("Model 2 Int value "+model2.getIntValue());
-        System.out.println("Model 2 String value "+model2.getStringValue());
+        Updater.update(employee1, employee2);
     }
 }

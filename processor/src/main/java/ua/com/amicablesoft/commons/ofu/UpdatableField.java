@@ -17,7 +17,13 @@ public class UpdatableField implements Field {
 
     @Override
     public void emitUpdateStatement(JavaWriter writer) throws IOException {
-        writer.emitStatement("Updater.update(%s.%s, %s.%s)",
+        writer.emitStatement("if (%s.%s != null && %s.%s != null) Updater.update(%s.%s, %s.%s)",
+                Constants.VARIABLE_NAME__ORIGIN_OBJECT, name,
+                Constants.VARIABLE_NAME__UPDATE_OBJECT, name,
+                Constants.VARIABLE_NAME__ORIGIN_OBJECT, name,
+                Constants.VARIABLE_NAME__UPDATE_OBJECT, name);
+
+        writer.emitStatement("else %s.%s = %s.%s",
                 Constants.VARIABLE_NAME__ORIGIN_OBJECT, name,
                 Constants.VARIABLE_NAME__UPDATE_OBJECT, name);
     }

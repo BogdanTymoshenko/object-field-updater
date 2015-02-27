@@ -1,5 +1,5 @@
-rootProject.name = 'object-field-updater'
+//rootProject.name = 'object-field-updater'
 
-include 'library'
-include 'processor'
-include 'sample'
+include ':library'
+include ':processor'
+include ':sample'

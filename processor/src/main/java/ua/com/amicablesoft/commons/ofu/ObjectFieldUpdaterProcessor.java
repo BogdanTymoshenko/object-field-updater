@@ -2,16 +2,29 @@ package ua.com.amicablesoft.commons.ofu;
 
 import com.google.auto.service.AutoService;
 
-import javax.annotation.processing.*;
+import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Processor;
+import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Created by Tymoshenko Bogdan <bogdan.tymoshenko@gmail.com> on 1/21/15.
@@ -54,8 +67,17 @@ public class ObjectFieldUpdaterProcessor extends AbstractProcessor {
             for (Element element : typeElement.getEnclosedElements()) {
                 if (element.getKind() == ElementKind.FIELD) {
                     VariableElement field = (VariableElement) element;
+                    if (field.getModifiers().contains(Modifier.FINAL)){
+                        // skip final field
+                        continue;
+                    }
+
+                    if (field.getAnnotation(Ignore.class) instanceof Ignore) {
+                        // skip ignored fields
+                        continue;
+                    }
                     if (field.asType().getKind() == TypeKind.DECLARED) {
-                        if (isFieldUpdatableClass(field)) {
+                        if (isFieldUpdatableClass(field.asType())) {
                             // this is updatable field
                             updaterMetadata.addField(new UpdatableField(field.getSimpleName().toString()));
                             continue;
@@ -78,8 +100,29 @@ public class ObjectFieldUpdaterProcessor extends AbstractProcessor {
         return true;
     }
 
-    private boolean isFieldUpdatableClass(VariableElement field) {
-        return typeUtils.asElement(field.asType()).getAnnotation(Updatable.class) instanceof Updatable;
+    private boolean isFieldUpdatableListClass(VariableElement field) {
+        Element fieldElement = typeUtils.asElement(field.asType());
+        if (fieldElement.getKind() == ElementKind.INTERFACE) {
+            TypeElement typeElement = (TypeElement) fieldElement;
+            if (typeElement.getQualifiedName().contentEquals(List.class.getName())) {
+                if (field.asType() instanceof DeclaredType) {
+                    DeclaredType declaredType = (DeclaredType) field.asType();
+                    for (TypeMirror typeMirror : declaredType.getTypeArguments())
+                        if (isFieldUpdatableClass(typeMirror))
+                            return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isFieldUpdatableClass(TypeMirror fieldTypeMirror) {
+        return typeUtils.asElement(fieldTypeMirror).getAnnotation(Updatable.class) instanceof Updatable;
+    }
+
+    private boolean isFieldMarkedIgnored(TypeMirror fieldTypeMirror) {
+        return typeUtils.asElement(fieldTypeMirror).getAnnotation(Ignore.class) instanceof Ignore;
     }
 
     @Override
